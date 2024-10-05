@@ -52,7 +52,7 @@ export async function updateUser(userData: UpdateUserParams) {
   }
 }
 
-export async function DeleteQuestionParamsUser(userData: DeleteUserParams) {
+export async function deleteUser(userData: DeleteUserParams) {
   try {
     connectToDatabase();
     const { clerkId } = userData;
