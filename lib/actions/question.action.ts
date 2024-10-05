@@ -3,13 +3,28 @@
 import questionModel from "@/database/question.model";
 import { connectToDatabase } from "../mongoose";
 import tagModel from "@/database/tag.model";
+import { CreateQuestionParams, GetQuestionsParams } from "./shared.types";
+import userModel from "@/database/user.model";
+import { revalidatePath } from "next/cache";
 
+export async function getQuestions(params: GetQuestionsParams) {
+  try {
+    connectToDatabase();
 
+    const questions = await questionModel
+      .find({})
+      .populate({ path: "tags", model: tagModel })
+      .populate({ path: "author", model: userModel })
+      .sort({ createdAt: -1 });
 
+    return { questions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
-
-
-export async function createQuestion(params: any) {
+export async function createQuestion(params: CreateQuestionParams) {
   try {
     // Connect to the database
     await connectToDatabase();
@@ -33,7 +48,7 @@ export async function createQuestion(params: any) {
 
       const existingTag = await tagModel.findOneAndUpdate(
         { name: regex }, // Find tag by name using regex
-        { $setOnInsert: {name:tag},$push:{ question: question._id } }, // Add the question ID to the tag's `questions` field
+        { $setOnInsert: { name: tag }, $push: { question: question._id } }, // Add the question ID to the tag's `questions` field
         { new: true, upsert: true } // Create the tag if it doesn't exist (upsert: true)
       );
 
@@ -42,9 +57,11 @@ export async function createQuestion(params: any) {
     }
 
     // Update the question with the tag references
-    await questionModel.findByIdAndUpdate(question._id, {$push:{tags:{$each:tagDocuments}}})
-     
-    await question.save();
+    await questionModel.findByIdAndUpdate(question._id, {
+      $push: { tags: { $each: tagDocuments } },
+    });
+
+    revalidatePath(path);
 
     return {
       success: true,
