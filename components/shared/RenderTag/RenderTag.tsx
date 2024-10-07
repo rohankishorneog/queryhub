@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 interface Props {
-  id: number;
+  id: string | number;
   name: string;
   totalQuestions?: number;
   showCount?: boolean;
