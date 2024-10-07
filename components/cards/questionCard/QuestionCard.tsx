@@ -66,7 +66,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       <div className="flex-between mt-6 w-full flex-wrap gap-3">
         <Matrix
           alt="user"
-          imgUrl="/assets/icons/avatar.svg"
+          imgUrl={author?.picture}
           values={author.name}
           title={` - ${getTimeStamp(createdAt)}`}
           textStyles="body-medium text-dark400_light700"
