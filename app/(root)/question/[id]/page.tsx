@@ -1,18 +1,30 @@
+import Answer from "@/components/forms/answer/Answer";
+import RenderTag from "@/components/shared/RenderTag/RenderTag";
+import AllAnswers from "@/components/shared/allAnswers/AllAnswers";
 import Matrix from "@/components/shared/matrix/Matrix";
 import ParseHtml from "@/components/shared/parseHtml/ParseHtml";
 import { getQuestionById } from "@/lib/actions/question.action";
+import { getUserById } from "@/lib/actions/user.action";
 import { getTimeStamp } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const page = async ({ params, searchParams }) => {
   const result = await getQuestionById({ questionId: params.id });
+  const { userId: clerkId } = auth();
+
+  let mongoUser;
+
+  if (clerkId) {
+    mongoUser = await getUserById({ userId: clerkId });
+  }
 
   return (
     <>
-      <div className="flex-start w-full flex-col">
-        <div className="flex w-fullflex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
+      <div className="flex-start w-full flex-col ">
+        <div className="flex w-full flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
           <Link
             href={`/profile/${result.author.clerkId}`}
             className="flex items-center justify-start gap-1"
@@ -31,12 +43,12 @@ const page = async ({ params, searchParams }) => {
             }
           </Link>
           <div className="flex justify-end">Voting</div>
-          <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
-            {result.title}
-          </h2>
         </div>
+        <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
+          {result.title}
+        </h2>
 
-        <div className="mt-5 mb-8 flex flex-wrap gap-4">
+        <div className="mt-5 mb-8 flex flex-wrap gap-4 justify-start">
           <Matrix
             alt="clock icon"
             imgUrl="/assets/icons/clock.svg"
@@ -64,7 +76,33 @@ const page = async ({ params, searchParams }) => {
         </div>
       </div>
 
-      <ParseHtml data={result.content} />
+      <ParseHtml data={result.explanation} />
+
+      <div className="flex flexd-wrap gap-3 mt-8">
+        {result.tags.map((tag) => (
+          <RenderTag
+            key={tag.id}
+            id={tag.id}
+            name={tag.name}
+            showCount={false}
+          />
+        ))}
+      </div>
+      <AllAnswers
+        questionId={result._id}
+        clerkId={clerkId}
+        userId={mongoUser?._id}
+        totalAnswers={result.answers.length}
+        page={searchParams?.page}
+        filter={searchParams?.filter}
+      />
+
+      <Answer
+        question={result.content}
+        questionId={JSON.stringify(result._id)}
+        authorId={JSON.stringify(mongoUser?._id)}
+      />
+
     </>
   );
 };
