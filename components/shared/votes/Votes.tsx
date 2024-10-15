@@ -5,6 +5,7 @@ import {
   downvoteQuestion,
   upvoteQuestion,
 } from "@/lib/actions/question.action";
+import { toggleSaveQuestions } from "@/lib/actions/user.action";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
@@ -81,6 +82,14 @@ const Votes: React.FC<VotesProps> = ({
     }
   };
 
+  const handleSave = async () => {
+    await toggleSaveQuestions({
+      userId: JSON.parse(userId),
+      questionId: JSON.parse(itemId),
+      path: pathName,
+    });
+  };
+
   return (
     <div className="flex gap-5">
       <div className="flex-center gap-2.5">
@@ -133,6 +142,7 @@ const Votes: React.FC<VotesProps> = ({
           height={18}
           alt="save"
           className="cursor-pointer"
+          onClick={handleSave}
         />
       )}
     </div>
