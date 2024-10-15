@@ -3,10 +3,12 @@ import RenderTag from "@/components/shared/RenderTag/RenderTag";
 import AllAnswers from "@/components/shared/allAnswers/AllAnswers";
 import Matrix from "@/components/shared/matrix/Matrix";
 import ParseHtml from "@/components/shared/parseHtml/ParseHtml";
+import Votes from "@/components/shared/votes/Votes";
 import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { getTimeStamp } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
+import { mongo } from "mongoose";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -20,6 +22,8 @@ const page = async ({ params, searchParams }) => {
   if (clerkId) {
     mongoUser = await getUserById({ userId: clerkId });
   }
+
+  console.log(mongoUser);
 
   return (
     <>
@@ -42,7 +46,18 @@ const page = async ({ params, searchParams }) => {
               </p>
             }
           </Link>
-          <div className="flex justify-end">Voting</div>
+          <div className="flex justify-end">
+            <Votes
+              type="question"
+              itemId={JSON.stringify(result._id)}
+              userId={JSON.stringify(mongoUser?._id)}
+              upvotes={result.upvotes.length}
+              downvotes={result.downvotes.length}
+              hasupVoted={result.upvotes.includes(mongoUser?._id)}
+              hasdownVoted={result.downvotes.includes(mongoUser?._id)}
+              hasSaved={mongoUser?.saved.includes(result._id)}
+            />
+          </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
           {result.title}
@@ -102,7 +117,6 @@ const page = async ({ params, searchParams }) => {
         questionId={JSON.stringify(result._id)}
         authorId={JSON.stringify(mongoUser?._id)}
       />
-
     </>
   );
 };
