@@ -1,6 +1,13 @@
 "use client";
 
+import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.actions";
+import {
+  downvoteQuestion,
+  upvoteQuestion,
+} from "@/lib/actions/question.action";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 interface VotesProps {
@@ -24,42 +31,54 @@ const Votes: React.FC<VotesProps> = ({
   hasdownVoted,
   hasSaved,
 }) => {
-  const [upvoteCount, setUpvoteCount] = useState(upvotes);
-  const [downvoteCount, setDownvoteCount] = useState(downvotes);
-  const [userHasUpvoted, setUserHasUpvoted] = useState(hasupVoted);
-  const [userHasDownvoted, setUserHasDownvoted] = useState(hasdownVoted);
-  const [userHasSaved, setUserHasSaved] = useState(hasSaved);
+  const pathName = usePathname();
+  //   const router = useRouter();
 
-  const handleUpvote = () => {
-    if (userHasUpvoted) {
-      setUpvoteCount(upvoteCount - 1);
-      setUserHasUpvoted(false);
-    } else {
-      setUpvoteCount(upvoteCount + 1);
-      if (userHasDownvoted) {
-        setDownvoteCount(downvoteCount - 1);
-        setUserHasDownvoted(false);
-      }
-      setUserHasUpvoted(true);
+  const handleVote = async (action: string) => {
+    if (!userId) {
+      return;
     }
-  };
-
-  const handleDownvote = () => {
-    if (userHasDownvoted) {
-      setDownvoteCount(downvoteCount - 1);
-      setUserHasDownvoted(false);
-    } else {
-      setDownvoteCount(downvoteCount + 1);
-      if (userHasUpvoted) {
-        setUpvoteCount(upvoteCount - 1);
-        setUserHasUpvoted(false);
+    if (action === "upvote") {
+      if (type === "question") {
+        await upvoteQuestion({
+          questionId: JSON.parse(itemId),
+          userId: JSON.parse(userId),
+          hasdownVoted,
+          hasupVoted,
+          path: pathName,
+        });
       }
-      setUserHasDownvoted(true);
+      if (type === "answer") {
+        await upvoteAnswer({
+          answerId: JSON.parse(itemId),
+          userId: JSON.parse(userId),
+          hasdownVoted,
+          hasupVoted,
+          path: pathName,
+        });
+      }
     }
-  };
 
-  const handleSave = () => {
-    setUserHasSaved(!userHasSaved);
+    if (action === "downvote") {
+      if (type === "question") {
+        await downvoteQuestion({
+          questionId: JSON.parse(itemId),
+          userId: JSON.parse(userId),
+          hasdownVoted,
+          hasupVoted,
+          path: pathName,
+        });
+      }
+      if (type === "answer") {
+        await downvoteAnswer({
+          answerId: JSON.parse(itemId),
+          userId: JSON.parse(userId),
+          hasdownVoted,
+          hasupVoted,
+          path: pathName,
+        });
+      }
+    }
   };
 
   return (
@@ -76,6 +95,7 @@ const Votes: React.FC<VotesProps> = ({
             height={18}
             alt="upvote"
             className="cursor-pointer"
+            onClick={() => handleVote("upvote")}
           />
 
           <div className="flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1">
@@ -93,6 +113,7 @@ const Votes: React.FC<VotesProps> = ({
             height={18}
             alt="downvote"
             className="cursor-pointer"
+            onClick={() => handleVote("downvote")}
           />
 
           <div className="flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1">
@@ -101,17 +122,19 @@ const Votes: React.FC<VotesProps> = ({
         </div>
       </div>
 
-      <Image
-        src={
-          hasSaved
-            ? "/assets/icons/star-filled.svg"
-            : "/assets/icons/star-red.svg"
-        }
-        width={18}
-        height={18}
-        alt="save"
-        className="cursor-pointer"
-      />
+      {type === "question" && (
+        <Image
+          src={
+            hasSaved
+              ? "/assets/icons/star-filled.svg"
+              : "/assets/icons/star-red.svg"
+          }
+          width={18}
+          height={18}
+          alt="save"
+          className="cursor-pointer"
+        />
+      )}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import {
   CreateQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
+  QuestionVoteParams,
 } from "./shared.types";
 import userModel from "@/database/user.model";
 import { revalidatePath } from "next/cache";
@@ -94,7 +95,86 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
         select: "id clerkId name picture",
       });
 
-    return  question ;
+    return question;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function upvoteQuestion(params: QuestionVoteParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+    console.log(params);
+
+    let updateQuery = {};
+
+    if (hasupVoted) {
+      console.log("ok1");
+      updateQuery = { $pull: { upvotes: userId } };
+    } else if (hasdownVoted) {
+      console.log("ok2");
+      updateQuery = {
+        $pull: { downvotes: userId },
+        $push: { upvotes: userId },
+      };
+    } else {
+      console.log("ok3");
+      updateQuery = { $addToSet: { upvotes: userId } };
+    }
+
+    const question = questionModel.findByIdAndUpdate(questionId, updateQuery, {
+      new: true,
+    });
+
+    console.log(question);
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    //incerement author's reputation
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function downvoteQuestion(params: QuestionVoteParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+
+    let updateQuery = {};
+
+    if (hasdownVoted) {
+      updateQuery = { $pull: { downvotes: userId } };
+    } else if (hasupVoted) {
+      updateQuery = {
+        $pull: { upvotes: userId },
+        $push: { downvotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { downvotes: userId } };
+    }
+
+    const question = await questionModel.findByIdAndUpdate(
+      questionId,
+      updateQuery,
+      {
+        new: true,
+      }
+    );
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    // decrease author's reputation
+    revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;

@@ -6,6 +6,7 @@ import { getAnswers } from "@/lib/actions/answer.actions";
 import Filter from "../filter/Filter";
 import { getTimeStamp } from "@/lib/utils";
 import ParseHtml from "../parseHtml/ParseHtml";
+import Votes from "../votes/Votes";
 
 interface Props {
   questionId: string;
@@ -59,7 +60,17 @@ const AllAnswers = async ({
                   </p>
                 </div>
               </Link>
-              <div className="flex justify-end"></div>
+              <div className="flex justify-end">
+                <Votes
+                  type="answer"
+                  itemId={JSON.stringify(answer._id)}
+                  userId={JSON.stringify(userId)}
+                  upvotes={answer.upvotes.length}
+                  downvotes={answer.downvotes.length}
+                  hasupVoted={answer.upvotes.includes(userId)}
+                  hasdownVoted={answer.downvotes.includes(userId)}
+                />
+              </div>
             </div>
             <ParseHtml data={answer.content} />
           </article>
