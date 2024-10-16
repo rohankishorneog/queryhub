@@ -53,7 +53,7 @@ export async function createQuestion(params: CreateQuestionParams) {
 
       const existingTag = await tagModel.findOneAndUpdate(
         { name: regex }, // Find tag by name using regex
-        { $setOnInsert: { name: tag }, $push: { question: question._id } }, // Add the question ID to the tag's `questions` field
+        { $setOnInsert: { name: tag }, $push: { questions: question._id } }, // Add the question ID to the tag's `questions` field
         { new: true, upsert: true } // Create the tag if it doesn't exist (upsert: true)
       );
 
