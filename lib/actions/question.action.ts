@@ -5,12 +5,17 @@ import { connectToDatabase } from "../mongoose";
 import tagModel from "@/database/tag.model";
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
+  EditQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
 import userModel from "@/database/user.model";
 import { revalidatePath } from "next/cache";
+import interactionModel from "@/database/interaction.model";
+import { redirect } from "next/navigation";
+import Answer from "@/database/answer.model";
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
@@ -174,6 +179,64 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     }
 
     // decrease author's reputation
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, path } = params;
+
+    const question = await questionModel.findById({ _id: questionId });
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    await questionModel.deleteOne({ _id: questionId });
+
+    await Answer.deleteMany({ question: questionId });
+
+    await interactionModel.deleteMany({ question: questionId });
+
+    await tagModel.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
+
+    await userModel.findByIdAndUpdate(question.author, {
+      $inc: { reputation: -10 },
+    });
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function editQuestion(params: EditQuestionParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, title, explanation, path } = params;
+
+    const question = await questionModel.findById(questionId).populate("tags");
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    question.title = title;
+    question.explanation = explanation;
+
+    await question.save();
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);

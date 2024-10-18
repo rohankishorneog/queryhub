@@ -1,6 +1,8 @@
 import RenderTag from "@/components/shared/RenderTag/RenderTag";
+import EditDeleteAction from "@/components/shared/editDeleteAction/EditDeleteAction";
 import Matrix from "@/components/shared/matrix/Matrix";
 import { getTimeStamp } from "@/lib/utils";
+import { SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
 import React from "react";
 
@@ -13,6 +15,7 @@ interface Author {
   id: number;
   name: string;
   imgUrl: string;
+  clerkId?:string| null
 }
 
 interface Answer {
@@ -31,7 +34,7 @@ interface QuestionCardProps {
   views: number;
   answers: Answer[]; // Array of answers with more detailed structure
   createdAt: Date;
-  clerkId?:string
+  clerkId?: string;
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -43,8 +46,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   views,
   answers,
   createdAt,
-  clerkId
+  clerkId,
 }) => {
+  const showActionButtons = clerkId && clerkId === author.clerkId;
   return (
     <div className="card-wrapper p-9 sm:px-11 rounded-[10px]">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -58,7 +62,14 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             </h2>
           </Link>
         </div>
+
+        <SignedIn>
+          {showActionButtons && (
+            <EditDeleteAction type="Question" itemId={JSON.stringify(id)} />
+          )}
+        </SignedIn>
       </div>
+
       <div className="flex flex-wrap mt-3.5 gap-2">
         {tags.map((tag) => (
           <RenderTag key={tag.id} name={tag.title} id={tag.id} />
