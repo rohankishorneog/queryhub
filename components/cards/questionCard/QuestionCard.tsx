@@ -31,6 +31,7 @@ interface QuestionCardProps {
   views: number;
   answers: Answer[]; // Array of answers with more detailed structure
   createdAt: Date;
+  clerkId?:string
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -42,6 +43,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   views,
   answers,
   createdAt,
+  clerkId
 }) => {
   return (
     <div className="card-wrapper p-9 sm:px-11 rounded-[10px]">

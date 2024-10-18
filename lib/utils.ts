@@ -29,3 +29,15 @@ export const getTimeStamp = (createdAt: Date): string => {
 
   return "just now";
 };
+
+export function formatDate(date: Date): string {
+  if (!(date instanceof Date)) {
+    throw new Error("Invalid date object");
+  }
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+  };
+  return date.toLocaleDateString("en-US", options);
+}
