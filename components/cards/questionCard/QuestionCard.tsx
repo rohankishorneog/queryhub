@@ -8,14 +8,14 @@ import React from "react";
 
 interface Tag {
   id: number;
-  title: string;
+  name: string;
 }
 
 interface Author {
   id: number;
   name: string;
   imgUrl: string;
-  clerkId?:string| null
+  clerkId?: string | null;
 }
 
 interface Answer {
@@ -72,7 +72,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
       <div className="flex flex-wrap mt-3.5 gap-2">
         {tags.map((tag) => (
-          <RenderTag key={tag.id} name={tag.title} id={tag.id} />
+          <RenderTag key={tag.id} name={tag.name} id={tag.id} />
         ))}
       </div>
 

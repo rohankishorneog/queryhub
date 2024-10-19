@@ -3,17 +3,12 @@ import Link from "next/link";
 import React from "react";
 import RenderTag from "../RenderTag/RenderTag";
 import { getHotQuestions } from "@/lib/actions/question.action";
-
-const popularTags = [
-  { id: 1, tag: "JavaScript", questions: 120 },
-  { id: 2, tag: "React", questions: 80 },
-  { id: 3, tag: "GraphQL", questions: 50 },
-  { id: 4, tag: "Node.js", questions: 90 },
-  { id: 5, tag: "TypeScript", questions: 70 },
-];
+import { getPopularTags } from "@/lib/actions/tag.actions";
 
 const RightSideBar = async () => {
   const hotQuestions = await getHotQuestions();
+  const popularTags = await getPopularTags();
+  console.log(popularTags);
   return (
     <section className="background-light900_dark200 light-border custom-scrollbar sticky right-0 top-0 flex h-screen w-[350px] flex-col overflow-y-auto border-l p-6 pt-36 shadow-light-300 dark:shadow-none max-xl:hidden">
       {" "}
@@ -42,10 +37,10 @@ const RightSideBar = async () => {
         <div className="mt-7 flex w-full flex-col gap-[30px]">
           {popularTags.map((tag) => (
             <RenderTag
-              id={tag.id}
-              name={tag.tag}
-              key={tag.id}
-              totalQuestions={tag.questions}
+              id={tag._id}
+              name={tag.name}
+              key={tag._id}
+              totalQuestions={tag.numberOfQuestions}
               showCount
             />
           ))}
