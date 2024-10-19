@@ -1,3 +1,4 @@
+import { SearchParamsProps } from "@/app/types";
 import UserCard from "@/components/cards/UserCard/UserCard";
 import Filter from "@/components/shared/filter/Filter";
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
@@ -7,8 +8,10 @@ import { getAllUsers } from "@/lib/actions/user.action";
 import Link from "next/link";
 import React from "react";
 
-const page = async () => {
-  const result = await getAllUsers({});
+const page = async ({ searchParams }: SearchParamsProps) => {
+  const result = await getAllUsers({
+    searchQuery: searchParams.q,
+  });
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
