@@ -23,6 +23,9 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
     connectToDatabase();
 
     const { page = 1, pageSize = 20, filter, searchQuery } = params;
+
+    const skipAmount = (page - 1) * pageSize;
+
     const query: FilterQuery<typeof userModel> = {};
 
     if (searchQuery) {
@@ -52,9 +55,15 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
         break;
     }
 
-    const users = await userModel.find(query).sort(sortOptions);
+    const users = await userModel
+      .find(query)
+      .sort(sortOptions)
+      .skip(skipAmount)
+      .limit(pageSize);
 
-    return { users };
+    const totalUsers = await userModel.countDocuments(query);
+    const isNext = totalUsers > skipAmount + users.length;
+    return { users, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -170,6 +179,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     connectToDatabase();
 
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
+    const skipAmount = (page - 1) * pageSize;
 
     const query: FilterQuery<typeof questionModel> = {};
     if (searchQuery) {
@@ -207,7 +217,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       match: searchQuery
         ? { title: { $regex: new RegExp(searchQuery, "i") } }
         : {},
-      options: { sort: sortOptions },
+      options: { sort: sortOptions, skip: skipAmount, limit: pageSize + 1 },
       populate: [
         {
           path: "tags",
@@ -227,8 +237,9 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     }
 
     const savedQuestions = user.saved;
+    const isNext = user.saved.length > pageSize;
 
-    return { questions: savedQuestions };
+    return { questions: savedQuestions, isNext };
   } catch (error) {
     console.log(error);
     throw error;
