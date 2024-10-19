@@ -1,5 +1,6 @@
 "use-client";
 
+import { SearchParamsProps } from "@/app/types";
 import QuestionCard from "@/components/cards/questionCard/QuestionCard";
 import HomeFilters from "@/components/home/HomeFilters/HomeFilters";
 import Filter from "@/components/shared/filter/Filter";
@@ -8,11 +9,14 @@ import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
 import { getQuestions } from "@/lib/actions/question.action";
+import { SearchParams } from "@/lib/actions/shared.types";
 import Link from "next/link";
 import React from "react";
 
-const Home = async () => {
-  const result = await getQuestions({});
+const Home = async ({ searchParams }: SearchParamsProps) => {
+  const result = await getQuestions({
+    searchQuery: searchParams.q,
+  });
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
