@@ -155,6 +155,15 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
 
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
 
+       const query: FilterQuery<typeof questionModel> = {};
+       if (searchQuery) {
+         query.$or = [
+           {
+             title: { $regex: new RegExp(searchQuery, "i") },
+             explanation: { $regex: new RegExp(searchQuery, "i") },
+           },
+         ];
+       }
     const user = await userModel.findOne({ clerkId }).populate({
       path: "saved",
       match: searchQuery

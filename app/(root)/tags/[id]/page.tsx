@@ -1,3 +1,4 @@
+import { URLProps } from "@/app/types";
 import QuestionCard from "@/components/cards/questionCard/QuestionCard";
 import NOResult from "@/components/shared/noResult/NOResult";
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
@@ -5,9 +6,11 @@ import { getQuestionsByTagId } from "@/lib/actions/tag.actions";
 import { auth } from "@clerk/nextjs/server";
 import React from "react";
 
-const page = async ({ params, searchParams }) => {
+const page = async ({ params, searchParams }: URLProps) => {
   const result = await getQuestionsByTagId({
     tagId: params.id,
+    page: 1,
+    searchQuery: searchParams.q,
   });
   return (
     <>

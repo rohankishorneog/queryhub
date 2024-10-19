@@ -38,7 +38,17 @@ export async function getAllTags(params: GetAllTagsParams) {
   try {
     connectToDatabase();
 
-    const tags = await tagModel.find({});
+    const { searchQuery } = params;
+    const query: FilterQuery<typeof tagModel> = {};
+    if (searchQuery) {
+      query.$or = [
+        {
+          name: { $regex: new RegExp(searchQuery, "i") },
+        },
+      ];
+    }
+
+    const tags = await tagModel.find(query);
     return { tags };
   } catch (error) {
     console.log(error);

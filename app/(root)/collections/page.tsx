@@ -1,5 +1,6 @@
 "use-client";
 
+import { SearchParamsProps } from "@/app/types";
 import QuestionCard from "@/components/cards/questionCard/QuestionCard";
 import Filter from "@/components/shared/filter/Filter";
 import NOResult from "@/components/shared/noResult/NOResult";
@@ -9,10 +10,11 @@ import { getSavedQuestions } from "@/lib/actions/user.action";
 import { auth } from "@clerk/nextjs/server";
 import React from "react";
 
-const Home = async () => {
+const Page = async ({ searchParams }: SearchParamsProps) => {
   const { userId } = auth();
   const result = await getSavedQuestions({
     clerkId: userId,
+    searchQuery: searchParams.q,
   });
   return (
     <>
@@ -61,4 +63,4 @@ const Home = async () => {
   );
 };
 
-export default Home;
+export default Page;

@@ -28,7 +28,7 @@ export async function getQuestions(params: GetQuestionsParams) {
       query.$or = [
         {
           title: { $regex: new RegExp(searchQuery, "i") },
-          content: { $regex: new RegExp(searchQuery, "i") },
+          explanation: { $regex: new RegExp(searchQuery, "i") },
         },
       ];
     }
