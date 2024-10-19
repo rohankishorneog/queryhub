@@ -36,7 +36,23 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
       ];
     }
 
-    const users = await userModel.find(query).sort({ createdAt: -1 });
+    let sortOptions = {};
+
+    switch (filter) {
+      case "new_users":
+        sortOptions = { joinedAt: -1 };
+        break;
+      case "old_users":
+        sortOptions = { joinedAt: 1 };
+        break;
+      case "top_contributors":
+        sortOptions = { reputation: -1 };
+        break;
+      default:
+        break;
+    }
+
+    const users = await userModel.find(query).sort(sortOptions);
 
     return { users };
   } catch (error) {
@@ -155,15 +171,15 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
 
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
 
-       const query: FilterQuery<typeof questionModel> = {};
-       if (searchQuery) {
-         query.$or = [
-           {
-             title: { $regex: new RegExp(searchQuery, "i") },
-             explanation: { $regex: new RegExp(searchQuery, "i") },
-           },
-         ];
-       }
+    const query: FilterQuery<typeof questionModel> = {};
+    if (searchQuery) {
+      query.$or = [
+        {
+          title: { $regex: new RegExp(searchQuery, "i") },
+          explanation: { $regex: new RegExp(searchQuery, "i") },
+        },
+      ];
+    }
     const user = await userModel.findOne({ clerkId }).populate({
       path: "saved",
       match: searchQuery
