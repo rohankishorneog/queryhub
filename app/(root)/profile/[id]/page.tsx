@@ -1,3 +1,4 @@
+import { URLProps } from "@/app/types";
 import AnswersTab from "@/components/shared/answersTab/AnswersTab";
 import ProfileLink from "@/components/shared/profileLink/ProfileLink";
 import QuestionsTab from "@/components/shared/questionsTab/QuestionsTab";
@@ -12,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const page = async ({ params, searchParams }) => {
+const page = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();
   const userInfo = await getUserInfo({ userId: params.id });
   return (
@@ -79,8 +80,10 @@ const page = async ({ params, searchParams }) => {
       </div>
 
       <Stats
+        reputation={userInfo.reputations}
         totalQuestions={userInfo.totalQuestions}
         totalAnswers={userInfo.totalAnswers}
+        badgeCounts={userInfo.badgeCounts}
       />
 
       <div className="mt-10 flex gap-10">
