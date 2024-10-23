@@ -1,3 +1,4 @@
+import { URLProps } from "@/app/types";
 import Answer from "@/components/forms/answer/Answer";
 import RenderTag from "@/components/shared/RenderTag/RenderTag";
 import AllAnswers from "@/components/shared/allAnswers/AllAnswers";
@@ -13,10 +14,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const page = async ({ params, searchParams }) => {
+const page = async ({ params, searchParams }: URLProps) => {
   const result = await getQuestionById({ questionId: params.id });
+
   const { userId: clerkId } = auth();
-  
 
   let mongoUser;
 
@@ -114,7 +115,7 @@ const page = async ({ params, searchParams }) => {
       />
 
       <Answer
-        question={result.content}
+        question={result.explanation}
         questionId={JSON.stringify(result._id)}
         authorId={JSON.stringify(mongoUser?._id)}
       />
