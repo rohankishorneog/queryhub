@@ -23,6 +23,15 @@ export async function createAnswer(params: CreateAnswerParams) {
     const questionObject = await questionModel.findByIdAndUpdate(question, {
       $push: { answers: newAnswer._id },
     });
+
+    await interactionModel.create({
+      user: author,
+      action: "answer",
+      question,
+      answer: newAnswer._id,
+      tags: questionObject.tags,
+    });
+
     await userModel.findByIdAndUpdate(author, { $inc: { reputation: 10 } });
     revalidatePath(path);
   } catch (error) {
@@ -97,6 +106,15 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
     }
 
     // increase author's reputation
+
+    await userModel.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -2 : 2 },
+    });
+
+    await userModel.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);
@@ -132,13 +150,20 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
     }
 
     // decrease author's reputation
+    await userModel.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -2 : 2 },
+    });
+
+    await userModel.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
-
 
 export async function deleteAnswer(params: DeleteAnswerParams) {
   try {

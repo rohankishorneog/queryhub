@@ -106,6 +106,14 @@ export async function createQuestion(params: CreateQuestionParams) {
       $push: { tags: { $each: tagDocuments } },
     });
 
+    await interactionModel.create({
+      user: author,
+      action: "ask_question",
+      question: question._id,
+      tags: tagDocuments,
+    });
+
+    await userModel.findByIdAndUpdate(author, { $inc: { reputation: 5 } });
     revalidatePath(path);
 
     return {
@@ -175,7 +183,16 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
     }
 
     //incerement author's reputation
-    revalidatePath(path);
+
+    await userModel.findByIdAndUpdate(userId, {
+      $inc: { reputaion: hasupVoted ? -1 : 1 },
+    });
+
+    await userModel.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
+    });
+
+    await revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;
@@ -214,6 +231,14 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     }
 
     // decrease author's reputation
+    await userModel.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -2 : 2 },
+    });
+
+    await userModel.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);
