@@ -3,6 +3,13 @@ import LeftSideBar from "@/components/shared/leftSidebar/LeftSideBar";
 import Navbar from "@/components/shared/navbar/Navbar";
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home | QueryHub",
+  description:
+    " Join QueryHub to get answers to your query from an experienced dev community",
+};
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -18,7 +25,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <RightSidebar />
       </div>
 
-      <Toaster /> 
+      <Toaster />
     </main>
   );
 };

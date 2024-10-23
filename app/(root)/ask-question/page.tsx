@@ -1,8 +1,15 @@
 import Question from "@/components/forms/question/Question";
 import { getUserById } from "@/lib/actions/user.action";
 import { auth } from "@clerk/nextjs/server";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Ask | QueryHub",
+  description:
+    "got stuck? Asks here to get it answered",
+};
 
 const Page = async () => {
   const { userId } = auth();

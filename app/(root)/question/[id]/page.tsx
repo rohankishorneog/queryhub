@@ -9,10 +9,16 @@ import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { getTimeStamp } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
-import { mongo } from "mongoose";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Questions | QueryHub",
+  description:
+    "Find Questions that devs already asked ",
+};
 
 const page = async ({ params, searchParams }: URLProps) => {
   const result = await getQuestionById({ questionId: params.id });

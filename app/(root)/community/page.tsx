@@ -5,8 +5,15 @@ import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters, UserFilters } from "@/constants/filters";
 import { getAllUsers } from "@/lib/actions/user.action";
+import { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
+
+export const metadata: Metadata= {
+  title: "Community | QueryHub",
+  description:
+    " Check which dev is stuck with which query",
+};
 
 const page = async ({ searchParams }: SearchParamsProps) => {
   const result = await getAllUsers({
