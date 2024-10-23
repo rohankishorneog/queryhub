@@ -27,7 +27,7 @@ const RightSideBar = async () => {
                 alt="chevron-right"
                 width={20}
                 height={20}
-              ></Image>
+              />
             </Link>
           ))}
         </div>
