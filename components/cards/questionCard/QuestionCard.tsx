@@ -86,30 +86,33 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           href={`/profile/${author.id}`}
           isAuthor
         />
-        <Matrix
-          alt="upvotes"
-          imgUrl="/assets/icons/like.svg"
-          values={upvotes}
-          title="Votes"
-          textStyles="small-medium text-dark400_light800"
-          href=""
-        />
-        <Matrix
-          alt="message"
-          imgUrl="/assets/icons/message.svg"
-          values={answers.length}
-          title="message"
-          textStyles="small-medium text-dark400_light800"
-          href=""
-        />
-        <Matrix
-          alt="views"
-          imgUrl="/assets/icons/eye.svg"
-          values={views}
-          title="Views"
-          textStyles="small-medium text-dark400_light800"
-          href=""
-        />
+
+        <div className="flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
+          <Matrix
+            alt="upvotes"
+            imgUrl="/assets/icons/like.svg"
+            values={upvotes}
+            title="Votes"
+            textStyles="small-medium text-dark400_light800"
+            href=""
+          />
+          <Matrix
+            alt="message"
+            imgUrl="/assets/icons/message.svg"
+            values={answers.length}
+            title="message"
+            textStyles="small-medium text-dark400_light800"
+            href=""
+          />
+          <Matrix
+            alt="views"
+            imgUrl="/assets/icons/eye.svg"
+            values={views}
+            title="Views"
+            textStyles="small-medium text-dark400_light800"
+            href=""
+          />
+        </div>
       </div>
     </div>
   );
