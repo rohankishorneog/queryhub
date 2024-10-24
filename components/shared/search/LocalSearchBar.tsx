@@ -50,7 +50,7 @@ const LocalSearchBar = ({
     }, 300);
 
     return () => clearTimeout(debounce);
-  }, [search, route, pathname, searchParams, query]);
+  }, [search, route, pathname, searchParams, query, router]);
 
   return (
     <div
@@ -68,7 +68,7 @@ const LocalSearchBar = ({
       <Input
         type="text"
         placeholder={placeholder}
-        value={search}
+        value={search || ""}
         onChange={(e) => setSearch(e.target.value)}
         className="paragraph-regular no-focus placeholder text-dark400_light700 bg-transparent shadow-none border-none outline-none"
       />

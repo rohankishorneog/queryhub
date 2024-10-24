@@ -5,6 +5,7 @@ import AllAnswers from "@/components/shared/allAnswers/AllAnswers";
 import Matrix from "@/components/shared/matrix/Matrix";
 import ParseHtml from "@/components/shared/parseHtml/ParseHtml";
 import Votes from "@/components/shared/votes/Votes";
+import { ITag } from "@/database/tag.model";
 import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { getTimeStamp } from "@/lib/utils";
@@ -101,8 +102,8 @@ const page = async ({ params, searchParams }: URLProps) => {
 
       <ParseHtml data={result.explanation} />
 
-      <div className="flex flexd-wrap gap-3 mt-8">
-        {result.tags.map((tag) => (
+      <div className="flex flex-wrap gap-3 mt-8">
+        {result.tags.map((tag:ITag) => (
           <RenderTag
             key={tag.id}
             id={tag.id}

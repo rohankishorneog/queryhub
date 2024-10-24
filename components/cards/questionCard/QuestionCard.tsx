@@ -6,7 +6,7 @@ import { SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
 import React from "react";
 
-interface Tag {
+export interface Tag {
   id: number;
   name: string;
 }
@@ -14,7 +14,7 @@ interface Tag {
 interface Author {
   id: number;
   name: string;
-  imgUrl: string;
+  picture: string;
   clerkId?: string | null;
 }
 
@@ -25,7 +25,7 @@ interface Answer {
   createdAt: Date;
 }
 
-interface QuestionCardProps {
+export interface Question {
   id: number;
   title: string;
   tags: Tag[];
@@ -34,7 +34,10 @@ interface QuestionCardProps {
   views: number;
   answers: Answer[]; // Array of answers with more detailed structure
   createdAt: Date;
-  clerkId?: string;
+}
+
+interface QuestionCardProps extends Question {
+  clerkId?: string | undefined | null;
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({

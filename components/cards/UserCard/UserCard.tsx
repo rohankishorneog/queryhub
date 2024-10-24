@@ -38,9 +38,11 @@ const UserCard = async ({ user }: Props) => {
         <div className="mt-5">
           {result.length > 0 ? (
             <div className="flex w-full gap-2">
-              {result.map((tag) => (
-                <RenderTag id={tag.id} name={tag.name} key={tag.id} />
-              ))}
+              {result.map((tag) =>
+                tag ? (
+                  <RenderTag id={tag.id} name={tag.name} key={tag.id} />
+                ) : null
+              )}
             </div>
           ) : (
             <Badge>No tags yet</Badge>

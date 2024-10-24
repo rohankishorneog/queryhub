@@ -7,12 +7,13 @@ import Filter from "../filter/Filter";
 import { getTimeStamp } from "@/lib/utils";
 import ParseHtml from "../parseHtml/ParseHtml";
 import Votes from "../votes/Votes";
+import Pagination from "../pagination/Pagination";
 
 interface Props {
   questionId: string;
   userId: string;
   totalAnswers: number;
-  page?: number;
+  page?: number | string;
   filter?: string;
   clerkId: string | null;
 }
@@ -79,7 +80,12 @@ const AllAnswers = async ({
         ))}
       </div>
 
-      <div className="mt-4 w-full"></div>
+      <div className="mt-4 w-full">
+        <Pagination
+          pageNumber={page ? +page : 1}
+          isNext={result.isNextAnswer}
+        />
+      </div>
     </div>
   );
 };

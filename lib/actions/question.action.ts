@@ -1,6 +1,6 @@
 "use server";
 
-import questionModel from "@/database/question.model";
+import questionModel, { IQuestion } from "@/database/question.model";
 import { connectToDatabase } from "../mongoose";
 import tagModel from "@/database/tag.model";
 import {
@@ -150,50 +150,48 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
     throw error;
   }
 }
-
 export async function upvoteQuestion(params: QuestionVoteParams) {
   try {
     connectToDatabase();
 
     const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
-    console.log(params);
 
     let updateQuery = {};
 
     if (hasupVoted) {
-      console.log("ok1");
       updateQuery = { $pull: { upvotes: userId } };
     } else if (hasdownVoted) {
-      console.log("ok2");
       updateQuery = {
         $pull: { downvotes: userId },
         $push: { upvotes: userId },
       };
     } else {
-      console.log("ok3");
       updateQuery = { $addToSet: { upvotes: userId } };
     }
 
-    const question = questionModel.findByIdAndUpdate(questionId, updateQuery, {
-      new: true,
-    });
+    const question = await questionModel.findByIdAndUpdate(
+      questionId,
+      updateQuery,
+      {
+        new: true,
+      }
+    );
 
-    console.log(question);
     if (!question) {
       throw new Error("Question not found");
     }
 
-    //incerement author's reputation
-
+    // Increment author's reputation by +1/-1 for upvoting/revoking an upvote to the question
     await userModel.findByIdAndUpdate(userId, {
-      $inc: { reputaion: hasupVoted ? -1 : 1 },
+      $inc: { reputation: hasupVoted ? -1 : 1 },
     });
 
+    // Increment author's reputation by +10/-10 for recieving an upvote/downvote to the question
     await userModel.findByIdAndUpdate(question.author, {
       $inc: { reputation: hasupVoted ? -10 : 10 },
     });
 
-    await revalidatePath(path);
+    revalidatePath(path);
   } catch (error) {
     console.log(error);
     throw error;

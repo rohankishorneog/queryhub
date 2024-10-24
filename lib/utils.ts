@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
 import { BadgeCounts } from "@/app/types";
-import { BADGE_CRITERIA } from "@/constants";
+import { BADGE_CRITERIA, CURRENCY_NOTATIONS } from "@/constants";
 import { JobPageFilters } from "@/constants/filters";
 import { GetFormattedSalaryParams } from "./actions/shared.types";
 

@@ -1,18 +1,22 @@
 "use-client";
 
 import { SearchParamsProps } from "@/app/types";
-import QuestionCard from "@/components/cards/questionCard/QuestionCard";
+import QuestionCard, { Question } from "@/components/cards/questionCard/QuestionCard";
 import Filter from "@/components/shared/filter/Filter";
 import NOResult from "@/components/shared/noResult/NOResult";
 import Pagination from "@/components/shared/pagination/Pagination";
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { QuestionFilters } from "@/constants/filters";
+import questionModel, { IQuestion } from "@/database/question.model";
 import { getSavedQuestions } from "@/lib/actions/user.action";
 import { auth } from "@clerk/nextjs/server";
 import React from "react";
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
   const { userId } = auth();
+
+  if (!userId) return null;
+
   const result = await getSavedQuestions({
     clerkId: userId,
     searchQuery: searchParams.q,
@@ -38,7 +42,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
       </div>
       <div className="mt-10 flex w-full flex-col gap-6">
         {result.questions.length > 0 ? (
-          result.questions.map((question) => (
+          result.questions.map((question: Question) => (
             <QuestionCard
               key={question.id}
               id={question.id}

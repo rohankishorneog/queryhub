@@ -132,7 +132,7 @@ export async function getCountries() {
   const res = await fetch(countriesURL);
   const countries = await res.json();
 
-  return countries.map((country) => ({
+  return countries.map((country: { name: { common: any; }; cca2: any; }) => ({
     name: country.name.common,
     code: country.cca2,
   })); // Returns a simplified list of country names and codes
