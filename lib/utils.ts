@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge";
 import qs from "query-string";
 import { BadgeCounts } from "@/app/types";
 import { BADGE_CRITERIA } from "@/constants";
+import { JobPageFilters } from "@/constants/filters";
+import { GetFormattedSalaryParams } from "./actions/shared.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -87,7 +89,6 @@ export const removeKeysFromQuery = ({
   );
 };
 
-
 interface BadgeParam {
   criteria: {
     type: keyof typeof BADGE_CRITERIA;
@@ -117,3 +118,63 @@ export const assignBadges = (params: BadgeParam) => {
 
   return badgeCounts;
 };
+
+export const employmentTypeConverter = (type: string): string => {
+  let employmentType: string = "";
+
+  JobPageFilters.forEach((filter) => {
+    if (filter.value === type) {
+      employmentType = filter.name;
+    }
+  });
+
+  return employmentType;
+};
+
+export const getFormattedSalary = ({
+  min,
+  max,
+  currency,
+  period,
+}: GetFormattedSalaryParams) => {
+  if (!min || !max) return null;
+
+  const salaryInfo = {
+    symbol: CURRENCY_NOTATIONS[currency] || "$",
+    low: salaryFormatter(min, 1),
+    high: salaryFormatter(max, 1),
+    per: period ? `/${period.toLowerCase()}ly` : "",
+  };
+
+  const { symbol, low, high, per } = salaryInfo;
+
+  const formattedSalary = `${symbol}${low} - ${symbol}${high}${per}`;
+
+  return formattedSalary as string;
+};
+
+const salaryFormatter = (num: number, digits: number) => {
+  const lookup = [
+    { value: 1, symbol: "" },
+    { value: 1e3, symbol: "k" },
+    { value: 1e6, symbol: "M" },
+    { value: 1e9, symbol: "G" },
+    { value: 1e12, symbol: "T" },
+    { value: 1e15, symbol: "P" },
+    { value: 1e18, symbol: "E" },
+  ];
+
+  const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+  const lookupItem = lookup
+    .slice()
+    .reverse()
+    .find((item) => num >= item.value);
+  return lookupItem
+    ? (num / lookupItem.value).toFixed(digits).replace(rx, "$1") +
+        lookupItem.symbol
+    : "0";
+};
+
+export function isValidImage(url: string) {
+  return /\.(jpg|jpeg|png|webp||svg)$/.test(url);
+}

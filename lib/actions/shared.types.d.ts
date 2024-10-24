@@ -157,3 +157,28 @@ export interface GetUserStatsParams {
 export interface DeleteUserParams {
   clerkId: string;
 }
+
+export interface JobFilterParams {
+  query: string;
+  page: string;
+}
+
+export interface GetFormattedSalaryParams {
+  min: number;
+  max: number;
+  currency: string;
+  period: string;
+}
+export interface PageParams {
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
+  filter?: string;
+}
+
+export interface GetJobsParams extends PageParams {
+  location?: string;
+  remote?: boolean | string;
+  wage?: boolean | string;
+  skills?: boolean | string;
+}
